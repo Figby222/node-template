@@ -18,6 +18,7 @@ passport.use(
             if (!isMatch) {
                 return done(null, false, { message: "Incorrect username or password" });
             }
+            
             return done(null, user);
         } catch (err) {
             done(err);
@@ -39,3 +40,5 @@ passport.deserializeUser(async (userId, done) => {
         done(err);
     }
 })
+
+export default passport;
