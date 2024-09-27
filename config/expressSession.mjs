@@ -1,15 +1,20 @@
 import expressSession from "express-session";
-import pool from "../db/pool.mjs";
-import pgSessionInit from "connect-pg-simple";
-const pgSession = pgSessionInit(expressSession);
+import { PrismaClient } from "@prisma/client";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import "dotenv/config";
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
+const TWO_MINUTES = 2 * 60 * 1000;
 const session = expressSession({
-    store: new pgSession({
-        pool: pool,
-        tableName: "user_sessions"
-    }),
+    store: new PrismaSessionStore(
+        new PrismaClient(),
+        {
+            checkPeriod: TWO_MINUTES,
+            dbRecordIdIsSessionId: true,
+            dbRecordIdFunction: undefined,
+            sessionModelName: "userSession"
+        }
+    ),
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
